@@ -1,0 +1,8 @@
+py main.py
+e2-e4
+e7-e5
+ng1-f3
+nb8-c6
+bf1-c4
+bf8-c5
+0-0
