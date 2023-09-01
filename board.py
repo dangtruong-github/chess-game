@@ -1,5 +1,6 @@
 from piece import Piece, Rook, Knight, Bishop, Queen, King, Pawn, Blank
 import commons
+import copy
 
 standard_board = [[Rook("a1", commons.WHITE), Pawn("a2", commons.WHITE), Blank("a3"), Blank("a4"), Blank("a5"), Blank("a6"), Pawn("a7", commons.BLACK), Rook("a8", commons.BLACK)],
                   [Knight("b1", commons.WHITE), Pawn("b2", commons.WHITE), Blank("b3"), Blank("b4"), Blank("b5"), Blank("b6"), Pawn("b7", commons.BLACK), Knight("b8", commons.BLACK)],
@@ -29,7 +30,7 @@ class Board:
     def updateBoolBoard(self):
         for i in range(8):
             for j in range(8):
-                self.boolBoard[i][j] = self.board[i][j].value * self.board[i][j].team
+                self.boolBoard[i][j] = self.board[i][j].value
 
     def isValidMove(self, piece, fromPos, toPos):
         # check if piece actually appears in 'fromPos'
@@ -44,13 +45,104 @@ class Board:
             return commons.INVALID_MOVE
         
         # check if it is actually a valid move
-        return realPiece.isValidMove(fromPos, toPos, self.boolBoard)
-        
-    def isInCheck(self, state):
-        pass
+        valid = realPiece.isValidMove(fromPos, toPos, self.boolBoard)
+        if valid == commons.INVALID_MOVE:    
+            return commons.INVALID_MOVE
 
-    def isNextInCheck(self, fromPos, toPos):   
-        pass
+        checked = self.isNextInCheck(fromPos, toPos)
+
+        print(checked)
+
+        if self.turn == commons.WHITE:
+            if checked % 2 == 1:
+                return commons.INVALID_MOVE
+        else:
+            if checked >= 2:
+                return commons.INVALID_MOVE
+        return valid
+        
+    def isInCheck(self, state, team):
+        # white king
+        king_pos = [0, 0]
+        for i in range(8):
+            for j in range(8):
+                if state[i][j] == King("a1", team).value:
+                    king_pos = [i, j]
+                    break
+        
+        print(team, king_pos)
+
+        # horizontal/vertical -- rook + queen
+        horizverti = [[1, 0], [0, -1], [-1, 0], [0, 1]]
+
+        for index, i in enumerate(horizverti):
+            for j in range(1, 8):
+                pos = [king_pos[0] + i[0] * j, king_pos[1] + i[1] * j]
+                if pos[0] < 0 or pos[0] > 7 or pos[1] < 0 or pos[1] > 7:
+                    break
+
+                if state[pos[0]][pos[1]] > 0:
+                    break
+
+                if state[pos[0]][pos[1]] == Queen("a1", team * (-1)).value or state[pos[0]][pos[1]] == Rook("a1", team * (-1)).value:
+                    return True
+        
+        print("pass horizontal")
+
+        # diagonal -- bishop + queen 
+        diagonals = [[1, 1], [1, -1], [-1, 1], [-1, -1]]
+
+        for index, i in enumerate(diagonals):
+            for j in range(1, 8):
+                pos = [king_pos[0] + i[0] * j, king_pos[1] + i[1] * j]
+                if pos[0] < 0 or pos[0] > 7 or pos[1] < 0 or pos[1] > 7:
+                    break
+
+                if state[pos[0]][pos[1]] > 0:
+                    break
+
+                if state[pos[0]][pos[1]] == Queen("a1", team * (-1)).value or state[pos[0]][pos[1]] == Bishop("a1", team * (-1)).value:
+                    return True
+        
+        print("pass diagonal")
+            
+        # knight
+        knight_move = [[-1, -2], [1, 2], [2, 1], [-2, -1], [1, -2], [-1, 2], [2, -1], [-2, 1]]
+        for index, i in enumerate(knight_move):
+            pos = [king_pos[0] + i[0], king_pos[1] + i[1]]
+            if pos[0] >= 0 and pos[0] <= 7 and pos[1] >= 0 and pos[1] <= 7:
+                if state[pos[0]][pos[1]] == Knight("a1", team * (-1)).value:
+                    return True
+                
+        print("pass knight")
+                
+        # pawn
+        pawn_move = [[-1, team], [1, team]]
+        for index, i in enumerate(pawn_move):
+            pos = [king_pos[0] + i[0], king_pos[1] + i[1]]
+            if pos[0] >= 0 and pos[0] <= 7 and pos[1] >= 0 and pos[1] <= 7:
+                if state[pos[0]][pos[1]] == Pawn("a1", team * (-1)).value:
+                    return False
+
+        print("pass pawn")
+
+        # king
+        king_move = [[-1, -1], [1, 1], [1, -1], [-1, 1], [1, 0], [-1, 0], [0, -1], [0, 1]]
+        for index, i in enumerate(king_move):
+            pos = [king_pos[0] + i[0], king_pos[1] + i[1]]
+            if pos[0] >= 0 and pos[0] <= 7 and pos[1] >= 0 and pos[1] <= 7:
+                if state[pos[0]][pos[1]] == King("a1", team * (-1)).value:
+                    return True
+                
+        print("pass king")
+        
+        return False
+
+    def isNextInCheck(self, fromPos, toPos): 
+        state = copy.deepcopy(self.boolBoard)
+        state[toPos[0]][toPos[1]] = state[fromPos[0]][fromPos[1]]
+        state[fromPos[0]][fromPos[1]] = 0
+        return self.isInCheck(state, commons.WHITE) + 2 * self.isInCheck(state, commons.BLACK)
 
     # special moves
     def isValidCastling(self, side):
@@ -80,6 +172,19 @@ class Board:
                     return False
 
         # check if they are in check
+        state = copy.deepcopy(self.boolBoard)
+        if self.isInCheck(state, self.turn) == True:
+            return False
+        
+        state[5 if side == 7 else 3][team] = supposed_king.value
+        state[4][team] = 0
+        if self.isInCheck(state, self.turn) == True:
+            return False
+        
+        state[6 if side == 7 else 2][team] = supposed_king.value
+        state[5 if side == 7 else 3][team] = 0
+        if self.isInCheck(state, self.turn) == True:
+            return False
         
         # moving mechanism
         supposed_king.move([6 if side == 7 else 2, team])
@@ -128,7 +233,7 @@ class Board:
         self.board[fromPos[0]][fromPos[1]].move(fromPos)
         self.board[toPos[0]][toPos[1]] = movingPiece
         self.boolBoard[fromPos[0]][fromPos[1]] = 0
-        self.boolBoard[toPos[0]][toPos[1]] = movingPiece.team
+        self.boolBoard[toPos[0]][toPos[1]] = movingPiece.value
 
         self.turn *= -1
 

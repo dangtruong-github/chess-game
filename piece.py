@@ -4,7 +4,7 @@ class Piece:
     def __init__(self, code, team, value, expression):
         self.pos = [ord(code[0]) - ord('a'), ord(code[1]) - ord('1')]
         self.team = team
-        self.value = value
+        self.value = value * team
         self.expression = expression
         if team == commons.BLACK:
             self.expression = self.expression.lower()
