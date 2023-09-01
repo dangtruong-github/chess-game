@@ -4,6 +4,7 @@ BLANK = 0
 INVALID_MOVE = 0
 VALID_MOVE = 1
 VALID_CAPTURE = 2
+VALID_EN_PASSANT = 3
 
 def signum(z):
     if z == 0:

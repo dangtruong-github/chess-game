@@ -10,7 +10,7 @@ class Piece:
             self.expression = self.expression.lower()
         self.hasMoved = False
 
-    def isValidMove(self, fromPos, toPos, state):
+    def isValidMove(self, fromPos, toPos, state, lastMove):
         # check if self is in fromPos position
         if fromPos[0] != self.pos[0] or fromPos[1] != self.pos[1]:
             return commons.INVALID_MOVE
@@ -19,11 +19,11 @@ class Piece:
         if state[toPos[0]][toPos[1]] == self.team:
             return commons.INVALID_MOVE
         elif state[toPos[0]][toPos[1]] == self.team * (-1):
-            return self.isValidPath(fromPos, toPos, state) * commons.VALID_CAPTURE
+            return self.isValidPath(fromPos, toPos, state, lastMove) * commons.VALID_CAPTURE
         
-        return self.isValidPath(fromPos, toPos, state) * commons.VALID_MOVE
+        return self.isValidPath(fromPos, toPos, state, lastMove) * commons.VALID_MOVE
     
-    def isValidPath(self, fromPos, toPos, state):
+    def isValidPath(self, fromPos, toPos, state, lastMove):
         pass
 
     def move(self, newPos):
@@ -34,7 +34,7 @@ class Rook(Piece):
     def __init__(self, code, team):
         super().__init__(code, team, 479, "R")
 
-    def isValidPath(self, fromPos, toPos, state):
+    def isValidPath(self, fromPos, toPos, state, lastMove):
         moving = [toPos[0] - fromPos[0], toPos[1] - fromPos[1]]
 
         # check if moving in the right direction
@@ -52,7 +52,7 @@ class Bishop(Piece):
     def __init__(self, code, team):
         super().__init__(code, team, 320, "B")
 
-    def isValidPath(self, fromPos, toPos, state):
+    def isValidPath(self, fromPos, toPos, state, lastMove):
         moving = [toPos[0] - fromPos[0], toPos[1] - fromPos[1]]
 
         # check if moving in the right direction
@@ -70,7 +70,7 @@ class Queen(Piece):
     def __init__(self, code, team):
         super().__init__(code, team, 929, "Q")
 
-    def isValidPath(self, fromPos, toPos, state):
+    def isValidPath(self, fromPos, toPos, state, lastMove):
         moving = [toPos[0] - fromPos[0], toPos[1] - fromPos[1]]
 
         # check if moving in the right direction
@@ -96,7 +96,7 @@ class Knight(Piece):
     def __init__(self, code, team):
         super().__init__(code, team, 280, "N")
 
-    def isValidPath(self, fromPos, toPos, state):
+    def isValidPath(self, fromPos, toPos, state, lastMove):
         moving = [toPos[0] - fromPos[0], toPos[1] - fromPos[1]]
 
         # check if moving in the right direction
@@ -109,7 +109,7 @@ class King(Piece):
     def __init__(self, code, team):
         super().__init__(code, team, 60000, "K")
 
-    def isValidPath(self, fromPos, toPos, state):
+    def isValidPath(self, fromPos, toPos, state, lastMove):
         moving = [toPos[0] - fromPos[0], toPos[1] - fromPos[1]]
 
         # check if moving in the right direction
@@ -122,7 +122,7 @@ class Pawn(Piece):
     def __init__(self, code, team):
         super().__init__(code, team, 100, "P")
 
-    def isValidPath(self, fromPos, toPos, state):
+    def isValidPath(self, fromPos, toPos, state, lastMove):
         moving = [toPos[0] - fromPos[0], toPos[1] - fromPos[1]]
 
         # check if moving in the right direction
@@ -151,7 +151,31 @@ class Pawn(Piece):
                 if state[fromPos[0] + moving[0]][fromPos[1] + moving[1]] == (-1) * self.team:
                     return commons.VALID_MOVE
                 
-                return commons.INVALID_MOVE
+                # en passant
+                # if pawn is in 4th/5th row
+                if self.team == commons.WHITE:
+                    if self.pos[1] != 4:
+                        return commons.INVALID_MOVE
+                    
+                if self.team == commons.BLACK:
+                    if self.pos[1] != 3:
+                        return commons.INVALID_MOVE
+                # if last move is a 2-squared pawn move
+                if len(lastMove) != 6:
+                    return commons.INVALID_MOVE
+                
+                if lastMove[0].lower() != "p":
+                    return commons.INVALID_MOVE
+
+                if lastMove[1] != lastMove[4] or ord(lastMove[2]) - ord(lastMove[5]) != 2 * self.team:
+                    return commons.INVALID_MOVE
+
+                col = ord(lastMove[1]) - ord('a')
+
+                if abs(self.pos[0] - col) != 1:
+                    return commons.INVALID_MOVE
+
+                return commons.VALID_EN_PASSANT
 
         return commons.INVALID_MOVE
     

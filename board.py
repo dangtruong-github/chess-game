@@ -26,11 +26,22 @@ class Board:
         self.boolBoard = initialized_boolBoard
         self.updateBoolBoard()
         self.turn = commons.WHITE
+        self.moveHistory = ""
 
     def updateBoolBoard(self):
         for i in range(8):
             for j in range(8):
                 self.boolBoard[i][j] = self.board[i][j].value
+    
+    def getLastMove(self):
+        if len(self.moveHistory) <= 0:
+            return False
+
+        for i in range(len(self.moveHistory) - 2, -1, -1):
+            if self.moveHistory[i] == ' ':
+                return self.moveHistory[i+1:-1]
+        
+        return self.moveHistory
 
     def isValidMove(self, piece, fromPos, toPos):
         # check if piece actually appears in 'fromPos'
@@ -45,7 +56,7 @@ class Board:
             return commons.INVALID_MOVE
         
         # check if it is actually a valid move
-        valid = realPiece.isValidMove(fromPos, toPos, self.boolBoard)
+        valid = realPiece.isValidMove(fromPos, toPos, self.boolBoard, self.getLastMove())
         if valid == commons.INVALID_MOVE:    
             return commons.INVALID_MOVE
 
@@ -202,6 +213,7 @@ class Board:
         self.boolBoard[5 if side == 7 else 3][team] = supposed_rook.team
 
         self.turn *= -1
+        self.moveHistory += "0-0 " if side == 7 else "0-0-0 "
 
         return True
     
@@ -224,9 +236,15 @@ class Board:
             print("Invalid piece!")
             return False
 
-        if self.isValidMove(movingPiece.expression, fromPos, toPos) == commons.INVALID_MOVE:
+        status = self.isValidMove(movingPiece.expression, fromPos, toPos)
+
+        if status == commons.INVALID_MOVE:
             print("Invalid move!")
             return False
+        
+        if status == commons.VALID_EN_PASSANT:
+            self.board[toPos[0]][fromPos[1]] = Blank("a1")
+            self.board[toPos[0]][fromPos[1]].move([toPos[0], fromPos[1]])
 
         movingPiece.move(toPos)
         self.board[fromPos[0]][fromPos[1]] = Blank("a1")
@@ -236,6 +254,9 @@ class Board:
         self.boolBoard[toPos[0]][toPos[1]] = movingPiece.value
 
         self.turn *= -1
+
+        self.moveHistory += code
+        self.moveHistory += " "
 
         return True
     
