@@ -1,4 +1,4 @@
-from piece import Piece, Rook, Knight, Bishop, Queen, King, Pawn, Blank
+from Pieces import Piece, Rook, Knight, Bishop, Queen, King, Pawn, Blank
 import commons
 import copy
 
@@ -32,6 +32,10 @@ class Board:
         for i in range(8):
             for j in range(8):
                 self.boolBoard[i][j] = self.board[i][j].value
+
+    def getAllPossibleMoves(self, state, turn):
+        
+        pass
     
     def getLastMove(self):
         if len(self.moveHistory) <= 0:
