@@ -27,7 +27,10 @@ class GUIBoard:
         for i in range(8):
             self.tk_board.append([])
             for j in range(8):  
-                button = Button(self.window, text = self.observer.board[i][j].unicode, font=("Arial", 20), state='normal', bg = 'grey', command = lambda: self.getPossibleMoves([1, 3]))
+                def create_lambda(i=i, j=j):
+                    return lambda i=i, j=j: self.getPossibleMoves([i, j])
+                
+                button = Button(self.window, text=self.observer.board[i][j].unicode, font=("Arial", 20), state='normal', bg='grey', command=create_lambda())
                 self.tk_board[-1].append(button)
 
         # place the widgets
@@ -43,16 +46,17 @@ class GUIBoard:
         self.window.mainloop()
 
     def getPossibleMoves(self, pos):
+        print(pos)
         if self.currentActive[0] > -1 and self.currentActive[1] > -1:
-            self.tk_board[pos[0]][pos[1]].configure(state = 'normal')
+            self.tk_board[self.currentActive[0]][self.currentActive[0]].configure(state = 'normal')
             for move in self.currentPossibleMoves:
                 move_pos = [-1, -1]
                 if len(move) == 3: # 0-0
-                    move_pos = [pos[0] + 2, pos[1]]
+                    move_pos = [self.currentActive[0] + 2, pos[1]]
                 elif len(move) == 5: # 0-0-0
-                    move_pos = [pos[0] - 2, pos[1]]
+                    move_pos = [self.currentActive[0] - 2, pos[1]]
                 else:
-                    move_pos = [ord(move[4]) - ord('a'), ord(move[4]) - ord('1')]
+                    move_pos = [ord(move[4]) - ord('a'), ord(move[5]) - ord('1')]
                 self.tk_board[move_pos[0]][move_pos[1]].configure(state = 'active', bg = 'yellow', command = lambda: self.getPossibleMoves(move_pos[0], move_pos[1])) 
 
         self.currentPossibleMoves.clear()
@@ -60,12 +64,13 @@ class GUIBoard:
         if pos[0] == self.currentActive[0] and pos[1] == self.currentActive[1]:
             self.currentActive = [-1, -1]
         else:
+            if pos[0] < 0 or pos[0] > 7 or pos[1] < 0 or pos[1] > 7:
+                self.currentActive = [-1, -1]
+                return
+            
             self.currentActive = pos
             self.currentPossibleMoves = self.observer.getPossibleMovesOfPiece(pos)
 
-            print(self.currentPossibleMoves)
-            print(self.currentActive)
-            
             self.tk_board[pos[0]][pos[1]].configure(state = 'active')
             for move in self.currentPossibleMoves:
                 move_pos = [-1, -1]
@@ -82,7 +87,7 @@ class GUIBoard:
         # configure
         self.observer.move(move)
         self.changeBoard()
-        self.input_move.delete(0, 'end')
+        self.getPossibleMoves([-1, -1])
         possibleMoves = self.observer.getAllPossibleMoves()
         if len(possibleMoves) == 0:
             self.move_button["state"] = "disabled"

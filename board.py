@@ -93,14 +93,6 @@ class Board:
         if pos[0] < 0 or pos[0] > 7 or pos[1] < 0 or pos[1] > 7:
             return []
 
-        print("jere", self.possibleMoves[pos[0]][pos[1]])
-
-        for i in range(8):
-            for j in range(8):
-                print(i, j, self.possibleMoves[i][j])
-
-        print(pos)
-
         return self.possibleMoves[pos[0]][pos[1]]
     
     def getLastMove(self):
