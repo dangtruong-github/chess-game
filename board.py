@@ -33,9 +33,31 @@ class Board:
             for j in range(8):
                 self.boolBoard[i][j] = self.board[i][j].value
 
-    def getAllPossibleMoves(self, state, turn):
+    def getAllPossibleMoves(self):
+        possibleMoves = []
+        for i in range(8):
+            for j in range(8):
+                if self.boolBoard[i][j] * self.turn > 0:
+                    moves = self.board[i][j].getPossibleMoves(self.boolBoard)
+                    for move in moves:
+                        checked = self.isNextInCheck([i, j], move)
+                        #print(self.board[i][j].expression + chr(i + ord('a')) + chr(j + ord('1')) + "-" + chr(move[0] + ord('a')) + chr(move[1] + ord('1')), checked)
+                        if self.turn == commons.WHITE:
+                            if checked % 2 == 1:
+                                continue
+                        else:
+                            if checked >= 2:
+                                continue
+                        
+                        possibleMoves.append(self.board[i][j].expression + chr(i + ord('a')) + chr(j + ord('1')) + "-" + chr(move[0] + ord('a')) + chr(move[1] + ord('1')))
         
-        pass
+        if len(possibleMoves) == 0:
+            if self.isInCheck(self.boolBoard, self.turn) == True:
+                print(self.turn * (-1), "win")
+            else:
+                print("Draw")
+        
+        return possibleMoves
     
     def getLastMove(self):
         if len(self.moveHistory) <= 0:
@@ -66,7 +88,7 @@ class Board:
 
         checked = self.isNextInCheck(fromPos, toPos)
 
-        print(checked)
+        #print(checked)
 
         if self.turn == commons.WHITE:
             if checked % 2 == 1:
@@ -77,7 +99,6 @@ class Board:
         return valid
         
     def isInCheck(self, state, team):
-        # white king
         king_pos = [0, 0]
         for i in range(8):
             for j in range(8):
@@ -85,7 +106,7 @@ class Board:
                     king_pos = [i, j]
                     break
         
-        print(team, king_pos)
+        #print(team, king_pos)
 
         # horizontal/vertical -- rook + queen
         horizverti = [[1, 0], [0, -1], [-1, 0], [0, 1]]
@@ -96,13 +117,13 @@ class Board:
                 if pos[0] < 0 or pos[0] > 7 or pos[1] < 0 or pos[1] > 7:
                     break
 
-                if state[pos[0]][pos[1]] > 0:
+                if state[pos[0]][pos[1]] * team > 0:
                     break
 
                 if state[pos[0]][pos[1]] == Queen("a1", team * (-1)).value or state[pos[0]][pos[1]] == Rook("a1", team * (-1)).value:
                     return True
         
-        print("pass horizontal")
+        #print("pass horizontal")
 
         # diagonal -- bishop + queen 
         diagonals = [[1, 1], [1, -1], [-1, 1], [-1, -1]]
@@ -113,13 +134,15 @@ class Board:
                 if pos[0] < 0 or pos[0] > 7 or pos[1] < 0 or pos[1] > 7:
                     break
 
-                if state[pos[0]][pos[1]] > 0:
+                #print(chr(pos[0] + ord('a')) + chr(pos[1] + ord('1')))
+
+                if state[pos[0]][pos[1]] * team > 0:
                     break
 
                 if state[pos[0]][pos[1]] == Queen("a1", team * (-1)).value or state[pos[0]][pos[1]] == Bishop("a1", team * (-1)).value:
                     return True
         
-        print("pass diagonal")
+        #print("pass diagonal")
             
         # knight
         knight_move = [[-1, -2], [1, 2], [2, 1], [-2, -1], [1, -2], [-1, 2], [2, -1], [-2, 1]]
@@ -129,7 +152,7 @@ class Board:
                 if state[pos[0]][pos[1]] == Knight("a1", team * (-1)).value:
                     return True
                 
-        print("pass knight")
+        #print("pass knight")
                 
         # pawn
         pawn_move = [[-1, team], [1, team]]
@@ -139,7 +162,7 @@ class Board:
                 if state[pos[0]][pos[1]] == Pawn("a1", team * (-1)).value:
                     return False
 
-        print("pass pawn")
+        #print("pass pawn")
 
         # king
         king_move = [[-1, -1], [1, 1], [1, -1], [-1, 1], [1, 0], [-1, 0], [0, -1], [0, 1]]
@@ -149,10 +172,10 @@ class Board:
                 if state[pos[0]][pos[1]] == King("a1", team * (-1)).value:
                     return True
                 
-        print("pass king")
+        #print("pass king")
         
         return False
-
+    
     def isNextInCheck(self, fromPos, toPos): 
         state = copy.deepcopy(self.boolBoard)
         state[toPos[0]][toPos[1]] = state[fromPos[0]][fromPos[1]]
@@ -162,8 +185,6 @@ class Board:
     # special moves
     def isValidCastling(self, side):
         team = 0 if self.turn == commons.WHITE else 7
-        
-        print("inside func")
 
         # king and rook hasn't moved
         supposed_king = self.board[4][team]
@@ -173,8 +194,6 @@ class Board:
         supposed_rook = self.board[side][team]
         if supposed_rook.expression.lower() != "r" or supposed_rook.hasMoved == True:
             return False
-        
-        print("pass stage 1")
 
         # no blocked
         if side == 0:
@@ -221,7 +240,7 @@ class Board:
 
         return True
     
-    def move_code(self, code):
+    def move(self, code):
         # castling
         if code == "0-0" or code == "0-0-0":
             return self.isValidCastling(7 if len(code) == 3 else 0)

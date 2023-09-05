@@ -61,3 +61,33 @@ class Pawn(Piece):
                 return commons.VALID_EN_PASSANT
 
         return commons.INVALID_MOVE
+    
+    def getPossibleMoves(self, state):
+        possibleMoves = []
+        for i in range(2):
+            pos = [self.pos[0] + self.moves[i][0], self.pos[1] + self.moves[i][1]]
+
+            # out of bounds
+            if pos[0] < 0 or pos[0] > 7 or pos[1] < 0 or pos[1] > 7:
+                continue
+
+            if state[pos[0]][pos[1]] * self.team < 0:
+                possibleMoves.append(pos)
+        
+        for i in range(2, len(self.moves)):
+            pos = [self.pos[0] + self.moves[i][0], self.pos[1] + self.moves[i][1]]
+
+            # out of bounds
+            if pos[0] < 0 or pos[0] > 7 or pos[1] < 0 or pos[1] > 7:
+                continue
+
+            if state[pos[0]][pos[1]] != 0:
+                break
+
+            possibleMoves.append(pos)
+
+            if self.hasMoved == True:
+                break
+            
+        return possibleMoves
+    

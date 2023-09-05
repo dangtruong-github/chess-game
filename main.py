@@ -5,6 +5,9 @@ b.showBoard()
 
 while(True):
     move = input()
-    b.move_code(move)
+    b.move(move)
     b.showBoard()
-    print(b.turn)
+    possibleMoves = b.getAllPossibleMoves()
+    if len(possibleMoves) == 0:
+        break
+    print(b.turn, possibleMoves)
