@@ -1,4 +1,4 @@
-import commons
+from commons import *
 from Pieces import Piece
 
 class Knight(Piece):
@@ -10,6 +10,6 @@ class Knight(Piece):
 
         # check if moving in the right direction
         if max(abs(moving[0]), abs(moving[1])) != 2 or min(abs(moving[0]), abs(moving[1])) != 1:
-            return commons.INVALID_MOVE
+            return INVALID_MOVE
         
-        return commons.VALID_MOVE
+        return VALID_MOVE

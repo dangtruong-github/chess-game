@@ -1,4 +1,4 @@
-import commons
+from commons import *
 
 class Piece:
     def __init__(self, code, team, value, expression):
@@ -6,7 +6,7 @@ class Piece:
         self.team = team
         self.value = value * team
         self.expression = expression
-        if team == commons.BLACK:
+        if team == BLACK:
             self.expression = self.expression.lower()
         self.hasMoved = False
         self.range = 7 if abs(self.value) > 300 else 1
@@ -27,15 +27,15 @@ class Piece:
     def isValidMove(self, fromPos, toPos, state, lastMove):
         # check if self is in fromPos position
         if fromPos[0] != self.pos[0] or fromPos[1] != self.pos[1]:
-            return commons.INVALID_MOVE
+            return INVALID_MOVE
         
         # check the color of the piece on the toPos
         if state[toPos[0]][toPos[1]] == self.team:
-            return commons.INVALID_MOVE
+            return INVALID_MOVE
         elif state[toPos[0]][toPos[1]] == self.team * (-1):
-            return self.isValidPath(fromPos, toPos, state, lastMove) * commons.VALID_CAPTURE
+            return self.isValidPath(fromPos, toPos, state, lastMove) * VALID_CAPTURE
         
-        return self.isValidPath(fromPos, toPos, state, lastMove) * commons.VALID_MOVE
+        return self.isValidPath(fromPos, toPos, state, lastMove) * VALID_MOVE
     
     def getPossibleMoves(self, state):
         possibleMoves = []

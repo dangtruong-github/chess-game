@@ -1,4 +1,4 @@
-import commons
+from commons import *
 from Pieces import Piece
 
 class Bishop(Piece):
@@ -10,11 +10,11 @@ class Bishop(Piece):
 
         # check if moving in the right direction
         if abs(moving[0]) != abs(moving[1]):
-            return commons.INVALID_MOVE
+            return INVALID_MOVE
         
         # check if any piece blocked
         for i in range(abs(moving[0]) - 1, 0, -1):
-            if state[fromPos[0] + commons.signum(moving[0]) * i][fromPos[1] + commons.signum(moving[1]) * i] != 0:
-                return commons.INVALID_MOVE
+            if state[fromPos[0] + signum(moving[0]) * i][fromPos[1] + signum(moving[1]) * i] != 0:
+                return INVALID_MOVE
 
-        return commons.VALID_MOVE
+        return VALID_MOVE

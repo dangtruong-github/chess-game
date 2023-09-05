@@ -1,15 +1,15 @@
 from Pieces import Piece, Rook, Knight, Bishop, Queen, King, Pawn, Blank
-import commons
+from commons import *
 import copy
 
-standard_board = [[Rook("a1", commons.WHITE), Pawn("a2", commons.WHITE), Blank("a3"), Blank("a4"), Blank("a5"), Blank("a6"), Pawn("a7", commons.BLACK), Rook("a8", commons.BLACK)],
-                  [Knight("b1", commons.WHITE), Pawn("b2", commons.WHITE), Blank("b3"), Blank("b4"), Blank("b5"), Blank("b6"), Pawn("b7", commons.BLACK), Knight("b8", commons.BLACK)],
-                  [Bishop("c1", commons.WHITE), Pawn("c2", commons.WHITE), Blank("c3"), Blank("c4"), Blank("c5"), Blank("c6"), Pawn("c7", commons.BLACK), Bishop("c8", commons.BLACK)],
-                  [Queen("d1", commons.WHITE), Pawn("d2", commons.WHITE), Blank("d3"), Blank("d4"), Blank("d5"), Blank("d6"), Pawn("d7", commons.BLACK), Queen("d8", commons.BLACK)],
-                  [King("e1", commons.WHITE), Pawn("e2", commons.WHITE), Blank("e3"), Blank("e4"), Blank("e5"), Blank("e6"), Pawn("e7", commons.BLACK), King("e8", commons.BLACK)],
-                  [Bishop("f1", commons.WHITE), Pawn("f2", commons.WHITE), Blank("f3"), Blank("f4"), Blank("f5"), Blank("f6"), Pawn("f7", commons.BLACK), Bishop("f8", commons.BLACK)],
-                  [Knight("g1", commons.WHITE), Pawn("g2", commons.WHITE), Blank("g3"), Blank("g4"), Blank("g5"), Blank("g6"), Pawn("g7", commons.BLACK), Knight("g8", commons.BLACK)],
-                  [Rook("h1", commons.WHITE), Pawn("h2", commons.WHITE), Blank("h3"), Blank("h4"), Blank("h5"), Blank("h6"), Pawn("h7", commons.BLACK), Rook("h8", commons.BLACK)]]
+standard_board = [[Rook("a1", WHITE), Pawn("a2", WHITE), Blank("a3"), Blank("a4"), Blank("a5"), Blank("a6"), Pawn("a7", BLACK), Rook("a8", BLACK)],
+                  [Knight("b1", WHITE), Pawn("b2", WHITE), Blank("b3"), Blank("b4"), Blank("b5"), Blank("b6"), Pawn("b7", BLACK), Knight("b8", BLACK)],
+                  [Bishop("c1", WHITE), Pawn("c2", WHITE), Blank("c3"), Blank("c4"), Blank("c5"), Blank("c6"), Pawn("c7", BLACK), Bishop("c8", BLACK)],
+                  [Queen("d1", WHITE), Pawn("d2", WHITE), Blank("d3"), Blank("d4"), Blank("d5"), Blank("d6"), Pawn("d7", BLACK), Queen("d8", BLACK)],
+                  [King("e1", WHITE), Pawn("e2", WHITE), Blank("e3"), Blank("e4"), Blank("e5"), Blank("e6"), Pawn("e7", BLACK), King("e8", BLACK)],
+                  [Bishop("f1", WHITE), Pawn("f2", WHITE), Blank("f3"), Blank("f4"), Blank("f5"), Blank("f6"), Pawn("f7", BLACK), Bishop("f8", BLACK)],
+                  [Knight("g1", WHITE), Pawn("g2", WHITE), Blank("g3"), Blank("g4"), Blank("g5"), Blank("g6"), Pawn("g7", BLACK), Knight("g8", BLACK)],
+                  [Rook("h1", WHITE), Pawn("h2", WHITE), Blank("h3"), Blank("h4"), Blank("h5"), Blank("h6"), Pawn("h7", BLACK), Rook("h8", BLACK)]]
 
 initialized_boolBoard = [[0, 0, 0, 0, 0, 0, 0, 0],
                       [0, 0, 0, 0, 0, 0, 0, 0],
@@ -25,7 +25,7 @@ class Board:
         self.board = standard_board
         self.boolBoard = initialized_boolBoard
         self.updateBoolBoard()
-        self.turn = commons.WHITE
+        self.turn = WHITE
         self.moveHistory = ""
 
     def updateBoolBoard(self):
@@ -42,7 +42,7 @@ class Board:
                     for move in moves:
                         checked = self.isNextInCheck([i, j], move)
                         #print(self.board[i][j].expression + chr(i + ord('a')) + chr(j + ord('1')) + "-" + chr(move[0] + ord('a')) + chr(move[1] + ord('1')), checked)
-                        if self.turn == commons.WHITE:
+                        if self.turn == WHITE:
                             if checked % 2 == 1:
                                 continue
                         else:
@@ -73,29 +73,29 @@ class Board:
         # check if piece actually appears in 'fromPos'
         realPiece = self.board[fromPos[0]][fromPos[1]]
         if realPiece.expression.lower() != piece.lower():
-            return commons.INVALID_MOVE
+            return INVALID_MOVE
         
         if realPiece.team != self.turn:
-            return commons.INVALID_MOVE
+            return INVALID_MOVE
 
         if realPiece.expression == "-":
-            return commons.INVALID_MOVE
+            return INVALID_MOVE
         
         # check if it is actually a valid move
         valid = realPiece.isValidMove(fromPos, toPos, self.boolBoard, self.getLastMove())
-        if valid == commons.INVALID_MOVE:    
-            return commons.INVALID_MOVE
+        if valid == INVALID_MOVE:    
+            return INVALID_MOVE
 
         checked = self.isNextInCheck(fromPos, toPos)
 
         #print(checked)
 
-        if self.turn == commons.WHITE:
+        if self.turn == WHITE:
             if checked % 2 == 1:
-                return commons.INVALID_MOVE
+                return INVALID_MOVE
         else:
             if checked >= 2:
-                return commons.INVALID_MOVE
+                return INVALID_MOVE
         return valid
         
     def isInCheck(self, state, team):
@@ -180,11 +180,11 @@ class Board:
         state = copy.deepcopy(self.boolBoard)
         state[toPos[0]][toPos[1]] = state[fromPos[0]][fromPos[1]]
         state[fromPos[0]][fromPos[1]] = 0
-        return self.isInCheck(state, commons.WHITE) + 2 * self.isInCheck(state, commons.BLACK)
+        return self.isInCheck(state, WHITE) + 2 * self.isInCheck(state, BLACK)
 
     # special moves
     def isValidCastling(self, side):
-        team = 0 if self.turn == commons.WHITE else 7
+        team = 0 if self.turn == WHITE else 7
 
         # king and rook hasn't moved
         supposed_king = self.board[4][team]
@@ -261,11 +261,11 @@ class Board:
 
         status = self.isValidMove(movingPiece.expression, fromPos, toPos)
 
-        if status == commons.INVALID_MOVE:
+        if status == INVALID_MOVE:
             print("Invalid move!")
             return False
         
-        if status == commons.VALID_EN_PASSANT:
+        if status == VALID_EN_PASSANT:
             self.board[toPos[0]][fromPos[1]] = Blank("a1")
             self.board[toPos[0]][fromPos[1]].move([toPos[0], fromPos[1]])
 
