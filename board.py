@@ -20,10 +20,21 @@ initialized_boolBoard = [[0, 0, 0, 0, 0, 0, 0, 0],
                       [0, 0, 0, 0, 0, 0, 0, 0],
                       [0, 0, 0, 0, 0, 0, 0, 0]]
 
+initialized_position = [[[], [], [], [], [], [], [], []],
+                         [[], [], [], [], [], [], [], []],
+                         [[], [], [], [], [], [], [], []],
+                         [[], [], [], [], [], [], [], []],
+                         [[], [], [], [], [], [], [], []],
+                         [[], [], [], [], [], [], [], []],
+                         [[], [], [], [], [], [], [], []],
+                         [[], [], [], [], [], [], [], []]]
+
 class Board:
     def __init__(self):
         self.board = standard_board
         self.boolBoard = initialized_boolBoard
+        self.possibleMoves = initialized_position
+        self.hasUpdatedMoves = False
         self.updateBoolBoard()
         self.turn = WHITE
         self.moveHistory = ""
@@ -34,28 +45,39 @@ class Board:
                 self.boolBoard[i][j] = self.board[i][j].value
 
     def getAllPossibleMoves(self):
+        if self.hasUpdatedMoves == False:
+            for i in range(8):
+                for j in range(8):
+                    self.possibleMoves[i][j].clear()
+                    if self.boolBoard[i][j] * self.turn > 0:
+                        moves = self.board[i][j].getPossibleMoves(self.boolBoard, self.getLastMove())
+                        for move in moves:
+                            checked = self.isNextInCheck([i, j], move)
+                            #print(self.board[i][j].expression + chr(i + ord('a')) + chr(j + ord('1')) + "-" + chr(move[0] + ord('a')) + chr(move[1] + ord('1')), checked)
+                            if self.turn == WHITE:
+                                if checked % 2 == 1:
+                                    continue
+                            else:
+                                if checked >= 2:
+                                    continue
+                            
+                            self.possibleMoves[i][j].append(self.board[i][j].expression + chr(i + ord('a')) + chr(j + ord('1')) + "-" + chr(move[0] + ord('a')) + chr(move[1] + ord('1')))
+                    
+                    if self.boolBoard[i][j] * self.turn == KING_VALUE:            
+                        if self.isValidCastling(0, False) == True:
+                            self.possibleMoves[i][j].append("0-0-0")
+
+                        if self.isValidCastling(7, False) == True:
+                            self.possibleMoves[i][j].append("0-0")
+            
+            self.hasUpdatedMoves = True
+
         possibleMoves = []
+
         for i in range(8):
             for j in range(8):
-                if self.boolBoard[i][j] * self.turn > 0:
-                    moves = self.board[i][j].getPossibleMoves(self.boolBoard, self.getLastMove())
-                    for move in moves:
-                        checked = self.isNextInCheck([i, j], move)
-                        #print(self.board[i][j].expression + chr(i + ord('a')) + chr(j + ord('1')) + "-" + chr(move[0] + ord('a')) + chr(move[1] + ord('1')), checked)
-                        if self.turn == WHITE:
-                            if checked % 2 == 1:
-                                continue
-                        else:
-                            if checked >= 2:
-                                continue
-                        
-                        possibleMoves.append(self.board[i][j].expression + chr(i + ord('a')) + chr(j + ord('1')) + "-" + chr(move[0] + ord('a')) + chr(move[1] + ord('1')))
-        
-        if self.isValidCastling(0, False) == True:
-            possibleMoves.append("0-0-0")
-
-        if self.isValidCastling(7, False) == True:
-            possibleMoves.append("0-0")
+                for move in self.possibleMoves[i][j]:
+                    possibleMoves.append(move)
 
         if len(possibleMoves) == 0:
             if self.isInCheck(self.boolBoard, self.turn) == True:
@@ -64,6 +86,22 @@ class Board:
                 print("Draw")
         
         return possibleMoves
+    
+    def getPossibleMovesOfPiece(self, pos):
+        self.getAllPossibleMoves()
+
+        if pos[0] < 0 or pos[0] > 7 or pos[1] < 0 or pos[1] > 7:
+            return []
+
+        print("jere", self.possibleMoves[pos[0]][pos[1]])
+
+        for i in range(8):
+            for j in range(8):
+                print(i, j, self.possibleMoves[i][j])
+
+        print(pos)
+
+        return self.possibleMoves[pos[0]][pos[1]]
     
     def getLastMove(self):
         if len(self.moveHistory) <= 0:
@@ -245,6 +283,8 @@ class Board:
             self.turn *= -1
             self.moveHistory += "0-0 " if side == 7 else "0-0-0 "
 
+            self.hasUpdatedMoves = False
+
         return True
     
     def move(self, code):
@@ -287,6 +327,8 @@ class Board:
 
         self.moveHistory += code
         self.moveHistory += " "
+
+        self.hasUpdatedMoves = False
 
         return True
     
