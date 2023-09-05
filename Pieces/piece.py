@@ -10,6 +10,7 @@ class Piece:
             self.expression = self.expression.lower()
         self.hasMoved = False
         self.range = 7 if abs(self.value) > 300 else 1
+        # moves
         self.moves = []
         if abs(self.value) == 479:
             self.moves = [[1, 0], [0, 1], [-1, 0], [0, -1]]
@@ -23,6 +24,22 @@ class Piece:
             self.moves = [[1, 1], [-1, 1], [0, 1], [0, 2]]
             for i in range(len(self.moves)):
                 self.moves[i][1] *= self.team
+        # unicode
+        tmp_str = "b" if self.team == -1 else "w"
+        if abs(self.value) == PAWN_VALUE:
+            tmp_str += "_pawn"
+        elif abs(self.value) == KNIGHT_VALUE:
+            tmp_str += "_knight"
+        elif abs(self.value) == BISHOP_VALUE:
+            tmp_str += "_bishop"
+        elif abs(self.value) == ROOK_VALUE:
+            tmp_str += "_rook"
+        elif abs(self.value) == QUEEN_VALUE:
+            tmp_str += "_queen"
+        elif abs(self.value) == KING_VALUE:
+            tmp_str += "_king"
+        
+        self.unicode = chrs[tmp_str] if len(tmp_str) > 2 else " "
 
     def isValidMove(self, fromPos, toPos, state, lastMove):
         # check if self is in fromPos position

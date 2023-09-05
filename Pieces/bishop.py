@@ -3,7 +3,7 @@ from Pieces import Piece
 
 class Bishop(Piece):
     def __init__(self, code, team):
-        super().__init__(code, team, 320, "B")
+        super().__init__(code, team, BISHOP_VALUE, "B")
 
     def isValidPath(self, fromPos, toPos, state, lastMove):
         moving = [toPos[0] - fromPos[0], toPos[1] - fromPos[1]]

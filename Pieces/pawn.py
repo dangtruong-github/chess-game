@@ -3,7 +3,7 @@ from Pieces import Piece
     
 class Pawn(Piece):
     def __init__(self, code, team):
-        super().__init__(code, team, 100, "P")
+        super().__init__(code, team, PAWN_VALUE, "P")
 
     def isValidPath(self, fromPos, toPos, state, lastMove):
         moving = [toPos[0] - fromPos[0], toPos[1] - fromPos[1]]

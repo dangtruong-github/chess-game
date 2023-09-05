@@ -3,7 +3,7 @@ from Pieces import Piece
 
 class Rook(Piece):
     def __init__(self, code, team):
-        super().__init__(code, team, 479, "R")
+        super().__init__(code, team, ROOK_VALUE, "R")
         
     def isValidPath(self, fromPos, toPos, state, lastMove):
         moving = [toPos[0] - fromPos[0], toPos[1] - fromPos[1]]

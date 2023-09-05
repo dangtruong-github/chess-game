@@ -25,7 +25,7 @@ class GUIBoard:
         for i in range(8):
             self.tk_board.append([])
             for j in range(8):  
-                label = Label(self.window, text = self.observer.board[i][j].expression, highlightthickness=2)
+                label = Label(self.window, text = self.observer.board[i][j].unicode, highlightthickness=2)
                 self.tk_board[-1].append(label)
 
         # place the widgets
@@ -50,4 +50,4 @@ class GUIBoard:
     def changeBoard(self):
         for i in range(8):
             for j in range(8):
-                self.tk_board[i][j].config(text = self.observer.board[i][j].expression)
+                self.tk_board[i][j].config(text = self.observer.board[i][j].unicode)
