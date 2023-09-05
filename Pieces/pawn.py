@@ -62,7 +62,7 @@ class Pawn(Piece):
 
         return INVALID_MOVE
     
-    def getPossibleMoves(self, state):
+    def getPossibleMoves(self, state, lastMove):
         possibleMoves = []
         for i in range(2):
             pos = [self.pos[0] + self.moves[i][0], self.pos[1] + self.moves[i][1]]
@@ -70,9 +70,38 @@ class Pawn(Piece):
             # out of bounds
             if pos[0] < 0 or pos[0] > 7 or pos[1] < 0 or pos[1] > 7:
                 continue
-
+            
+            # piece
             if state[pos[0]][pos[1]] * self.team < 0:
                 possibleMoves.append(pos)
+                continue
+            
+            # en passant
+            # if pawn is in 4th/5th row
+            if self.team == WHITE:
+                if self.pos[1] != 4:
+                    continue
+                
+            if self.team == BLACK:
+                if self.pos[1] != 3:
+                    continue
+            # if last move is a 2-squared pawn move
+            if len(lastMove) != 6:
+                continue
+            
+            if lastMove[0].lower() != "p":
+                continue
+
+            if lastMove[1] != lastMove[4] or ord(lastMove[2]) - ord(lastMove[5]) != 2 * self.team:
+                continue
+
+            col = ord(lastMove[1]) - ord('a')
+
+            if abs(self.pos[0] - col) != 1:
+                continue
+
+            possibleMoves.append(pos)
+
         
         for i in range(2, len(self.moves)):
             pos = [self.pos[0] + self.moves[i][0], self.pos[1] + self.moves[i][1]]

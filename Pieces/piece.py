@@ -54,7 +54,7 @@ class Piece:
         
         return self.isValidPath(fromPos, toPos, state, lastMove) * VALID_MOVE
     
-    def getPossibleMoves(self, state):
+    def getPossibleMoves(self, state, lastMove = ""):
         possibleMoves = []
         for index, i in enumerate(self.moves):
             for j in range(1, self.range + 1):

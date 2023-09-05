@@ -38,7 +38,7 @@ class Board:
         for i in range(8):
             for j in range(8):
                 if self.boolBoard[i][j] * self.turn > 0:
-                    moves = self.board[i][j].getPossibleMoves(self.boolBoard)
+                    moves = self.board[i][j].getPossibleMoves(self.boolBoard, self.getLastMove())
                     for move in moves:
                         checked = self.isNextInCheck([i, j], move)
                         #print(self.board[i][j].expression + chr(i + ord('a')) + chr(j + ord('1')) + "-" + chr(move[0] + ord('a')) + chr(move[1] + ord('1')), checked)
@@ -51,6 +51,12 @@ class Board:
                         
                         possibleMoves.append(self.board[i][j].expression + chr(i + ord('a')) + chr(j + ord('1')) + "-" + chr(move[0] + ord('a')) + chr(move[1] + ord('1')))
         
+        if self.isValidCastling(0, False) == True:
+            possibleMoves.append("0-0-0")
+
+        if self.isValidCastling(7, False) == True:
+            possibleMoves.append("0-0")
+
         if len(possibleMoves) == 0:
             if self.isInCheck(self.boolBoard, self.turn) == True:
                 print(self.turn * (-1), "win")
@@ -183,7 +189,7 @@ class Board:
         return self.isInCheck(state, WHITE) + 2 * self.isInCheck(state, BLACK)
 
     # special moves
-    def isValidCastling(self, side):
+    def isValidCastling(self, side, move = True):
         team = 0 if self.turn == WHITE else 7
 
         # king and rook hasn't moved
@@ -220,23 +226,24 @@ class Board:
         if self.isInCheck(state, self.turn) == True:
             return False
         
-        # moving mechanism
-        supposed_king.move([6 if side == 7 else 2, team])
-        self.board[4][team] = Blank('a1')
-        self.board[4][team].move([4, team])
-        self.board[6 if side == 7 else 2][team] = supposed_king
-        self.boolBoard[4][team] = 0
-        self.boolBoard[6 if side == 7 else 2][team] = supposed_king.team
+        if move:
+            # moving mechanism
+            supposed_king.move([6 if side == 7 else 2, team])
+            self.board[4][team] = Blank('a1')
+            self.board[4][team].move([4, team])
+            self.board[6 if side == 7 else 2][team] = supposed_king
+            self.boolBoard[4][team] = 0
+            self.boolBoard[6 if side == 7 else 2][team] = supposed_king.team
 
-        supposed_rook.move([5 if side == 7 else 3, team])
-        self.board[side][team] = Blank('a1')
-        self.board[side][team].move([side, team])
-        self.board[5 if side == 7 else 3][team] = supposed_rook
-        self.boolBoard[side][team] = 0
-        self.boolBoard[5 if side == 7 else 3][team] = supposed_rook.team
+            supposed_rook.move([5 if side == 7 else 3, team])
+            self.board[side][team] = Blank('a1')
+            self.board[side][team].move([side, team])
+            self.board[5 if side == 7 else 3][team] = supposed_rook
+            self.boolBoard[side][team] = 0
+            self.boolBoard[5 if side == 7 else 3][team] = supposed_rook.team
 
-        self.turn *= -1
-        self.moveHistory += "0-0 " if side == 7 else "0-0-0 "
+            self.turn *= -1
+            self.moveHistory += "0-0 " if side == 7 else "0-0-0 "
 
         return True
     
