@@ -30,7 +30,7 @@ class GUIBoard:
                 def create_lambda(i=i, j=j):
                     return lambda i=i, j=j: self.getPossibleMoves([i, j])
                 
-                button = Button(self.window, text=self.observer.board[i][j].unicode, font=("Arial", 20), state='normal', bg='grey', command=create_lambda())
+                button = Button(self.window, text=self.observer.board[i][j].unicode, font=("Arial", 20), state='normal', bg='white', command=create_lambda())
                 self.tk_board[-1].append(button)
 
         # place the widgets
@@ -52,12 +52,14 @@ class GUIBoard:
             for move in self.currentPossibleMoves:
                 move_pos = [-1, -1]
                 if len(move) == 3: # 0-0
-                    move_pos = [self.currentActive[0] + 2, pos[1]]
+                    move_pos = [self.currentActive[0] + 2, self.currentActive[1]]
                 elif len(move) == 5: # 0-0-0
-                    move_pos = [self.currentActive[0] - 2, pos[1]]
+                    move_pos = [self.currentActive[0] - 2, self.currentActive[1]]
                 else:
                     move_pos = [ord(move[4]) - ord('a'), ord(move[5]) - ord('1')]
-                self.tk_board[move_pos[0]][move_pos[1]].configure(state = 'active', bg = 'yellow', command = lambda: self.getPossibleMoves(move_pos[0], move_pos[1])) 
+                def create_lambda(pos1=move_pos[0], pos2=move_pos[1]):
+                    return lambda pos1=pos1, pos2=pos2: self.getPossibleMoves([pos1, pos2])
+                self.tk_board[move_pos[0]][move_pos[1]].configure(state = 'normal', bg = 'white', command = create_lambda()) 
 
         self.currentPossibleMoves.clear()
 
@@ -80,7 +82,10 @@ class GUIBoard:
                     move_pos = [pos[0] - 2, pos[1]]
                 else:
                     move_pos = [ord(move[4]) - ord('a'), ord(move[5]) - ord('1')]
-                self.tk_board[move_pos[0]][move_pos[1]].configure(state = 'active', bg = 'yellow', command = lambda: self.makeMove(move)) 
+                def create_lambda(move=move):
+                    return lambda move=move: self.makeMove(move)
+                
+                self.tk_board[move_pos[0]][move_pos[1]].configure(state = 'normal', bg = 'yellow', command = create_lambda()) 
 
     def makeMove(self, move):
 
