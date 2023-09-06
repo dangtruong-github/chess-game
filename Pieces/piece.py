@@ -1,26 +1,39 @@
 from commons import *
 
 class Piece:
-    def __init__(self, code, team, value, expression):
+    def __init__(self, code, team, expression):
         self.pos = [ord(code[0]) - ord('a'), ord(code[1]) - ord('1')]
         self.team = team
-        self.value = value * team
         self.expression = expression
+        self.value = BLANK_VALUE
+        if expression[0].lower() == 'p':
+            self.value = PAWN_VALUE * team
+        elif expression[0].lower() == 'n':
+            self.value = KNIGHT_VALUE * team 
+        if expression[0].lower() == 'b':
+            self.value = BISHOP_VALUE * team
+        if expression[0].lower() == 'r':
+            self.value = ROOK_VALUE * team
+        if expression[0].lower() == 'q':
+            self.value = QUEEN_VALUE * team
+        if expression[0].lower() == 'k':
+            self.value = KING_VALUE * team
+
         if team == BLACK:
             self.expression = self.expression.lower()
         self.hasMoved = False
         self.range = 7 if abs(self.value) > 300 else 1
         # moves
         self.moves = []
-        if abs(self.value) == 479:
+        if abs(self.value) == ROOK_VALUE:
             self.moves = [[1, 0], [0, 1], [-1, 0], [0, -1]]
-        elif abs(self.value) == 320:
+        elif abs(self.value) == BISHOP_VALUE:
             self.moves = [[1, 1], [1, -1], [-1, 1], [-1, -1]]
-        elif abs(self.value) > 900:
+        elif abs(self.value) == QUEEN_VALUE or abs(self.value) == KING_VALUE:
             self.moves = [[1, 0], [0, 1], [-1, 0], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]]
-        elif abs(self.value) == 280:
+        elif abs(self.value) == KNIGHT_VALUE:
             self.moves = [[1, 2], [2, 1], [-1, 2], [2, -1], [1, -2], [-2, 1], [-1, -2], [-2, -1]]
-        elif abs(self.value) == 100:
+        elif abs(self.value) == PAWN_VALUE:
             self.moves = [[1, 1], [-1, 1], [0, 1], [0, 2]]
             for i in range(len(self.moves)):
                 self.moves[i][1] *= self.team
@@ -44,12 +57,12 @@ class Piece:
     def isValidMove(self, fromPos, toPos, state, lastMove):
         # check if self is in fromPos position
         if fromPos[0] != self.pos[0] or fromPos[1] != self.pos[1]:
-            print("not equal from pos")
+            #print("not equal from pos")
             return INVALID_MOVE
         
         # check the color of the piece on the toPos
         if state[toPos[0]][toPos[1]] == self.team:
-            print("to pos same team")
+            #print("to pos same team")
             return INVALID_MOVE
         elif state[toPos[0]][toPos[1]] == self.team * (-1):
             return self.isValidPath(fromPos, toPos, state, lastMove) * VALID_CAPTURE

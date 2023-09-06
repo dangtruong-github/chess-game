@@ -289,15 +289,16 @@ class Board:
         # castling
         if code == "0-0" or code == "0-0-0":
             return self.isValidCastling(7 if len(code) == 3 else 0)
-        
-        if len(code) < 5 or len(code) > 6:
-            return False
-        if len(code) == 5:
+        if len(code) == 5 or len(code) == 7:
             code = "P" + code
-        #print(code)
+        elif len(code) < 5 or len(code) > 8:
+            return False
         piece = code[0]
         fromPos = [ord(code[1]) - ord('a'), ord(code[2]) - ord('1')]
         toPos = [ord(code[4]) - ord('a'), ord(code[5]) - ord('1')]
+        promotePiece = "-"
+        if len(code) == 8:
+            promotePiece = code[7]
         movingPiece = self.board[fromPos[0]][fromPos[1]]
 
         if movingPiece.expression.lower() != piece.lower():
@@ -313,6 +314,18 @@ class Board:
         if status == VALID_EN_PASSANT:
             self.board[toPos[0]][fromPos[1]] = Blank("a1")
             self.board[toPos[0]][fromPos[1]].move([toPos[0], fromPos[1]])
+
+        if promotePiece[0] != '-':
+            print("promoted = ", promotePiece)
+            if promotePiece[0].lower() == 'n':
+                movingPiece = Knight("a1", self.turn)
+            elif promotePiece[0].lower() == 'b':
+                movingPiece = Bishop("a1", self.turn)
+            elif promotePiece[0].lower() == 'r':
+                movingPiece = Rook("a1", self.turn)
+            elif promotePiece[0].lower() == 'q':
+                print("promoted queen")
+                movingPiece = Queen("a1", self.turn)
 
         movingPiece.move(toPos)
         self.board[fromPos[0]][fromPos[1]] = Blank("a1")

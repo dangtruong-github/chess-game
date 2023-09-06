@@ -3,7 +3,7 @@ from Pieces import Piece
     
 class King(Piece):
     def __init__(self, code, team):
-        super().__init__(code, team, KING_VALUE, "K")
+        super().__init__(code, team, "K")
 
     def isValidPath(self, fromPos, toPos, state, lastMove):
         moving = [toPos[0] - fromPos[0], toPos[1] - fromPos[1]]

@@ -82,6 +82,10 @@ class GUIBoard:
                 self.tk_board[move_pos[0]][move_pos[1]].configure(state = 'normal', bg = 'yellow', command = create_lambda()) 
 
     def makeMove(self, move):
+        print(move)
+        if move[0].lower() == 'p' and ((move[2] == '7' and move[5] == '8') or (move[2] == '2' and move[5] == '1')):
+            move += "=Q"
+            print(move)
 
         # configure
         self.observer.move(move)
