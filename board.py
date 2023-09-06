@@ -144,11 +144,12 @@ class Board:
         king_pos = [0, 0]
         for i in range(8):
             for j in range(8):
-                if state[i][j] == King("a1", team).value:
+                if state[i][j] == KING_VALUE * team:
                     king_pos = [i, j]
                     break
         
-        #print(team, king_pos)
+        #if posTochr(king_pos) == "d8":
+        #    print(team, king_pos, posTochr(king_pos))
 
         # horizontal/vertical -- rook + queen
         horizverti = [[1, 0], [0, -1], [-1, 0], [0, 1]]
@@ -162,10 +163,12 @@ class Board:
                 if state[pos[0]][pos[1]] * team > 0:
                     break
 
-                if state[pos[0]][pos[1]] == Queen("a1", team * (-1)).value or state[pos[0]][pos[1]] == Rook("a1", team * (-1)).value:
+                if state[pos[0]][pos[1]] == QUEEN_VALUE * team or state[pos[0]][pos[1]] == ROOK_VALUE * team:
+                    #print(state[pos[0]][pos[1]], posTochr(pos))
                     return True
         
-        #print("pass horizontal")
+        #if posTochr(king_pos) == "d8":
+            #print("pass horizontal")
 
         # diagonal -- bishop + queen 
         diagonals = [[1, 1], [1, -1], [-1, 1], [-1, -1]]
@@ -181,40 +184,44 @@ class Board:
                 if state[pos[0]][pos[1]] * team > 0:
                     break
 
-                if state[pos[0]][pos[1]] == Queen("a1", team * (-1)).value or state[pos[0]][pos[1]] == Bishop("a1", team * (-1)).value:
+                if state[pos[0]][pos[1]] == QUEEN_VALUE * team or state[pos[0]][pos[1]] == BISHOP_VALUE * team:
                     return True
         
-        #print("pass diagonal")
+        #if posTochr(king_pos) == "d8":
+            #print("pass diagonal")
             
         # knight
         knight_move = [[-1, -2], [1, 2], [2, 1], [-2, -1], [1, -2], [-1, 2], [2, -1], [-2, 1]]
         for index, i in enumerate(knight_move):
             pos = [king_pos[0] + i[0], king_pos[1] + i[1]]
             if pos[0] >= 0 and pos[0] <= 7 and pos[1] >= 0 and pos[1] <= 7:
-                if state[pos[0]][pos[1]] == Knight("a1", team * (-1)).value:
+                if state[pos[0]][pos[1]] == KNIGHT_VALUE * team:
                     return True
-                
-        #print("pass knight")
+           
+        #if posTochr(king_pos) == "d8":     
+            #print("pass knight")
                 
         # pawn
         pawn_move = [[-1, team], [1, team]]
         for index, i in enumerate(pawn_move):
             pos = [king_pos[0] + i[0], king_pos[1] + i[1]]
             if pos[0] >= 0 and pos[0] <= 7 and pos[1] >= 0 and pos[1] <= 7:
-                if state[pos[0]][pos[1]] == Pawn("a1", team * (-1)).value:
+                if state[pos[0]][pos[1]] == PAWN_VALUE * team:
                     return False
 
-        #print("pass pawn")
+        #if posTochr(king_pos) == "d8":
+            #print("pass pawn")
 
         # king
         king_move = [[-1, -1], [1, 1], [1, -1], [-1, 1], [1, 0], [-1, 0], [0, -1], [0, 1]]
         for index, i in enumerate(king_move):
             pos = [king_pos[0] + i[0], king_pos[1] + i[1]]
             if pos[0] >= 0 and pos[0] <= 7 and pos[1] >= 0 and pos[1] <= 7:
-                if state[pos[0]][pos[1]] == King("a1", team * (-1)).value:
+                if state[pos[0]][pos[1]] == KING_VALUE * team:
                     return True
-                
-        #print("pass king")
+         
+        #if posTochr(king_pos) == "d8":       
+            #print("pass king")
         
         return False
     
@@ -316,7 +323,7 @@ class Board:
             self.board[toPos[0]][fromPos[1]].move([toPos[0], fromPos[1]])
 
         if promotePiece[0] != '-':
-            print("promoted = ", promotePiece)
+            #print("promoted = ", promotePiece)
             if promotePiece[0].lower() == 'n':
                 movingPiece = Knight("a1", self.turn)
             elif promotePiece[0].lower() == 'b':
@@ -324,7 +331,7 @@ class Board:
             elif promotePiece[0].lower() == 'r':
                 movingPiece = Rook("a1", self.turn)
             elif promotePiece[0].lower() == 'q':
-                print("promoted queen")
+                #print("promoted queen")
                 movingPiece = Queen("a1", self.turn)
 
         movingPiece.move(toPos)
@@ -343,10 +350,13 @@ class Board:
 
         return True
     
-    def showBoard(self):
-        print("********")
-        for i in range(8):
-            for j in range(8):
-                print(self.board[j][7 -i].expression, end="")
-            print()
-        print("********")
+    def showBoard(self, board = None):
+        if board == None:
+            print("********")
+            for i in range(8):
+                for j in range(8):
+                    print(self.board[j][7 -i].expression, end="")
+                print()
+            print("********")
+        else:
+            print(board)

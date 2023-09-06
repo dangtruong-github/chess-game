@@ -22,7 +22,7 @@ class Piece:
         if team == BLACK:
             self.expression = self.expression.lower()
         self.hasMoved = False
-        self.range = 7 if abs(self.value) > 300 else 1
+        self.range = 7 if (abs(self.value) > KNIGHT_VALUE) and (abs(self.value) < KING_VALUE) else 1
         # moves
         self.moves = []
         if abs(self.value) == ROOK_VALUE:
@@ -74,19 +74,27 @@ class Piece:
         for index, i in enumerate(self.moves):
             for j in range(1, self.range + 1):
                 pos = [self.pos[0] + i[0] * j, self.pos[1] + i[1] * j]
-
+                
                 # out of bounds
                 if pos[0] < 0 or pos[0] > 7 or pos[1] < 0 or pos[1] > 7:
+                    #if abs(self.value) == KING_VALUE:
+                        #print("king out of bounds", posTochr(pos))
                     break
                 
                 # same team
                 if state[pos[0]][pos[1]] * self.team > 0:
+                    #if abs(self.value) == KING_VALUE:
+                        #print("king same team", posTochr(pos))
                     break
 
+                #if abs(self.value) == KING_VALUE:
+                    #print("king", posTochr(pos))
                 possibleMoves.append(pos)
 
                 # different team
                 if state[pos[0]][pos[1]] * self.team < 0:
+                    #if abs(self.value) == KING_VALUE:
+                        #print("king on different team", posTochr(pos))
                     break
 
         return possibleMoves

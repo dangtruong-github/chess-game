@@ -2,13 +2,25 @@
 from tkinter import *
 from commons import *
 
+promotion_pieces = ["Q", "R", "B", "N"]
+
 class GUIBoard:
     def __init__(self, board):
+        # creating the tkinter self.window
+        self.window = Tk()
+
         self.observer = board
         self.currentPossibleMoves = []
         self.currentActive = [-1, -1]
-        # creating the tkinter self.window
-        self.window = Tk()
+        self.promotion = []
+        self.currentlyPromoting = False
+        self.lastMove = ""
+        
+        for piece in promotion_pieces:
+            def create_lambda(piece=piece):
+                return lambda piece=piece: self.makePromotion(piece)
+            new_button = Button(self.window, text=piece, font=("Arial", 20), state='normal', bg='white', command=create_lambda())
+            self.promotion.append(new_button)
 
         self.turn = WHITE
 
@@ -40,6 +52,9 @@ class GUIBoard:
         self.window.mainloop()
 
     def getPossibleMoves(self, pos):
+        if self.currentlyPromoting == True:
+            return
+        
         print(pos)
         if self.currentActive[0] > -1 and self.currentActive[1] > -1:
             self.tk_board[self.currentActive[0]][self.currentActive[0]].configure(state = 'normal')
@@ -82,13 +97,27 @@ class GUIBoard:
                 self.tk_board[move_pos[0]][move_pos[1]].configure(state = 'normal', bg = 'yellow', command = create_lambda()) 
 
     def makeMove(self, move):
+        if self.currentlyPromoting == True and len(move) != 1:
+            return
         print(move)
         if move[0].lower() == 'p' and ((move[2] == '7' and move[5] == '8') or (move[2] == '2' and move[5] == '1')):
-            move += "=Q"
-            print(move)
+            self.lastMove = move
+            self.currentlyPromoting = True
+            for i in range(len(self.promotion)):
+                self.promotion[i].grid(row=i, column=8)
+            return
+        
+        if len(move) == 1:
+            move = self.lastMove + "=" + move
+            for i in range(len(self.promotion)):
+                self.promotion[i].grid_remove()
+            self.currentlyPromoting = False
 
         # configure
-        self.observer.move(move)
+        self.lastMove = move
+        pieceMoved = self.observer.move(move)
+        if pieceMoved == False:
+            return
         self.changeBoard()
         self.getPossibleMoves([-1, -1])
         possibleMoves = self.observer.getAllPossibleMoves()
@@ -96,6 +125,11 @@ class GUIBoard:
             for move in possibleMoves:
                 print(move, end=" ")
             print()
+
+    def makePromotion(self, piece):
+        #print("kansas city")
+        self.makeMove(piece)
+        return
 
     def changeBoard(self):
         for i in range(8):

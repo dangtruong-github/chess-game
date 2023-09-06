@@ -19,6 +19,9 @@ def signum(z):
         return (int)(0)
     return (int)(z / abs(z))
 
+def posTochr(pos):
+    return chr(pos[0] + ord('a')) + chr(pos[1] + ord('1')) 
+
 chrs = {
     'b_checker': u'\u25FB',
     'b_pawn': u'\u265F',

@@ -7,7 +7,7 @@ class Pawn(Piece):
 
     def isValidPath(self, fromPos, toPos, state, lastMove):
         moving = [toPos[0] - fromPos[0], toPos[1] - fromPos[1]]
-        print(moving)
+        #print(moving)
 
         # check if moving in the right direction
         if moving[1] != self.team:
@@ -33,7 +33,7 @@ class Pawn(Piece):
                 return VALID_MOVE
             
             elif abs(moving[0]) == 1:
-                print("piece in to pos=", state[fromPos[0] + moving[0]][fromPos[1] + moving[1]])
+                #print("piece in to pos=", state[fromPos[0] + moving[0]][fromPos[1] + moving[1]])
                 if state[fromPos[0] + moving[0]][fromPos[1] + moving[1]] * self.team < 0:
                     return VALID_MOVE
                 
@@ -48,20 +48,20 @@ class Pawn(Piece):
                         return INVALID_MOVE
                 # if last move is a 2-squared pawn move
                 if len(lastMove) != 6:
-                    print("lastMove=", lastMove)
+                    #print("lastMove=", lastMove)
                     return INVALID_MOVE
                 
                 if lastMove[0].lower() != "p":
                     return INVALID_MOVE
 
                 if lastMove[1] != lastMove[4] or ord(lastMove[2]) - ord(lastMove[5]) != 2 * self.team:
-                    print("lastMove=!", lastMove)
+                    #print("lastMove=!", lastMove)
                     return INVALID_MOVE
 
                 col = ord(lastMove[1]) - ord('a')
 
                 if abs(self.pos[0] - col) != 1:
-                    print("col=", col, "self.col=", self.pos[0])
+                    #print("col=", col, "self.col=", self.pos[0])
                     return INVALID_MOVE
 
                 return VALID_EN_PASSANT
@@ -103,7 +103,7 @@ class Pawn(Piece):
 
             col = ord(lastMove[1]) - ord('a')
 
-            if abs(self.pos[0] - col) != 1:
+            if self.moves[i][0] != col - self.pos[0]:
                 continue
 
             possibleMoves.append(pos)
