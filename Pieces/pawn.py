@@ -107,7 +107,6 @@ class Pawn(Piece):
                 continue
 
             possibleMoves.append(pos)
-
         
         for i in range(2, len(self.moves)):
             pos = [self.pos[0] + self.moves[i][0], self.pos[1] + self.moves[i][1]]
