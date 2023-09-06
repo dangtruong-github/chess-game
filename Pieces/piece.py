@@ -44,10 +44,12 @@ class Piece:
     def isValidMove(self, fromPos, toPos, state, lastMove):
         # check if self is in fromPos position
         if fromPos[0] != self.pos[0] or fromPos[1] != self.pos[1]:
+            print("not equal from pos")
             return INVALID_MOVE
         
         # check the color of the piece on the toPos
         if state[toPos[0]][toPos[1]] == self.team:
+            print("to pos same team")
             return INVALID_MOVE
         elif state[toPos[0]][toPos[1]] == self.team * (-1):
             return self.isValidPath(fromPos, toPos, state, lastMove) * VALID_CAPTURE
@@ -69,6 +71,10 @@ class Piece:
                     break
 
                 possibleMoves.append(pos)
+
+                # different team
+                if state[pos[0]][pos[1]] * self.team < 0:
+                    break
 
         return possibleMoves
     

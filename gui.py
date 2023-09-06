@@ -10,8 +10,6 @@ class GUIBoard:
         # creating the tkinter self.window
         self.window = Tk()
 
-        self.input_move = Entry(self.window)
-
         self.turn = WHITE
 
         # function define for
@@ -20,7 +18,6 @@ class GUIBoard:
 
         # create a button widget and attached
         # with makeMove function
-        self.move_button = Button(self.window, text = "Move", command = self.makeMove)
 
         # create a Label widget
         self.tk_board = []
@@ -38,9 +35,6 @@ class GUIBoard:
         for i in range(8):
             for j in range(8):
                 self.tk_board[i][j].grid(row=7-j, column=i)
-
-        self.input_move.grid(row=0, column=8, columnspan=2)
-        self.move_button.grid(row=1, column=8, columnspan=2)
 
         # Start the GUI
         self.window.mainloop()
@@ -94,10 +88,7 @@ class GUIBoard:
         self.changeBoard()
         self.getPossibleMoves([-1, -1])
         possibleMoves = self.observer.getAllPossibleMoves()
-        if len(possibleMoves) == 0:
-            self.move_button["state"] = "disabled"
-            self.input_move.grid_remove()
-        else:
+        if len(possibleMoves) > 0:
             for move in possibleMoves:
                 print(move, end=" ")
             print()

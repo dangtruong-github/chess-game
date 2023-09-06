@@ -109,17 +109,21 @@ class Board:
         # check if piece actually appears in 'fromPos'
         realPiece = self.board[fromPos[0]][fromPos[1]]
         if realPiece.expression.lower() != piece.lower():
+            #print("not equal expression")
             return INVALID_MOVE
         
         if realPiece.team != self.turn:
+            #print("not equal turn")
             return INVALID_MOVE
 
         if realPiece.expression == "-":
+            #print("no piece to move")
             return INVALID_MOVE
         
         # check if it is actually a valid move
         valid = realPiece.isValidMove(fromPos, toPos, self.boolBoard, self.getLastMove())
-        if valid == INVALID_MOVE:    
+        if valid == INVALID_MOVE:  
+            #print("invalid move!")  
             return INVALID_MOVE
 
         checked = self.isNextInCheck(fromPos, toPos)
@@ -128,9 +132,11 @@ class Board:
 
         if self.turn == WHITE:
             if checked % 2 == 1:
+                #print("in check")
                 return INVALID_MOVE
         else:
             if checked >= 2:
+                #print("in check")
                 return INVALID_MOVE
         return valid
         
@@ -288,7 +294,7 @@ class Board:
             return False
         if len(code) == 5:
             code = "P" + code
-        print(code)
+        #print(code)
         piece = code[0]
         fromPos = [ord(code[1]) - ord('a'), ord(code[2]) - ord('1')]
         toPos = [ord(code[4]) - ord('a'), ord(code[5]) - ord('1')]
