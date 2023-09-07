@@ -77,24 +77,24 @@ class Piece:
                 
                 # out of bounds
                 if pos[0] < 0 or pos[0] > 7 or pos[1] < 0 or pos[1] > 7:
-                    #if abs(self.value) == KING_VALUE:
-                        #print("king out of bounds", posTochr(pos))
+                    #if abs(self.value) == KNIGHT_VALUE:
+                        #print("knight out of bounds", posTochr(pos))
                     break
                 
                 # same team
                 if state[pos[0]][pos[1]] * self.team > 0:
-                    #if abs(self.value) == KING_VALUE:
-                        #print("king same team", posTochr(pos))
+                    #if abs(self.value) == KNIGHT_VALUE:
+                        #print("knight same team", posTochr(pos))
                     break
 
-                #if abs(self.value) == KING_VALUE:
-                    #print("king", posTochr(pos))
+                #if abs(self.value) == KNIGHT_VALUE:
+                    #print("knight", posTochr(pos))
                 possibleMoves.append(pos)
 
                 # different team
                 if state[pos[0]][pos[1]] * self.team < 0:
-                    #if abs(self.value) == KING_VALUE:
-                        #print("king on different team", posTochr(pos))
+                    #if abs(self.value) == KNIGHT_VALUE:
+                        #print("knight on different team", posTochr(pos))
                     break
 
         return possibleMoves

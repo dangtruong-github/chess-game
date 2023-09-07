@@ -163,7 +163,7 @@ class Board:
                 if state[pos[0]][pos[1]] * team > 0:
                     break
 
-                if state[pos[0]][pos[1]] == QUEEN_VALUE * team or state[pos[0]][pos[1]] == ROOK_VALUE * team:
+                if state[pos[0]][pos[1]] == QUEEN_VALUE * team * (-1) or state[pos[0]][pos[1]] == ROOK_VALUE * team * (-1):
                     #print(state[pos[0]][pos[1]], posTochr(pos))
                     return True
         
@@ -184,7 +184,7 @@ class Board:
                 if state[pos[0]][pos[1]] * team > 0:
                     break
 
-                if state[pos[0]][pos[1]] == QUEEN_VALUE * team or state[pos[0]][pos[1]] == BISHOP_VALUE * team:
+                if state[pos[0]][pos[1]] == QUEEN_VALUE * team * (-1) or state[pos[0]][pos[1]] == BISHOP_VALUE * team * (-1):
                     return True
         
         #if posTochr(king_pos) == "d8":
@@ -195,7 +195,7 @@ class Board:
         for index, i in enumerate(knight_move):
             pos = [king_pos[0] + i[0], king_pos[1] + i[1]]
             if pos[0] >= 0 and pos[0] <= 7 and pos[1] >= 0 and pos[1] <= 7:
-                if state[pos[0]][pos[1]] == KNIGHT_VALUE * team:
+                if state[pos[0]][pos[1]] == KNIGHT_VALUE * team * (-1):
                     return True
            
         #if posTochr(king_pos) == "d8":     
@@ -206,7 +206,7 @@ class Board:
         for index, i in enumerate(pawn_move):
             pos = [king_pos[0] + i[0], king_pos[1] + i[1]]
             if pos[0] >= 0 and pos[0] <= 7 and pos[1] >= 0 and pos[1] <= 7:
-                if state[pos[0]][pos[1]] == PAWN_VALUE * team:
+                if state[pos[0]][pos[1]] == PAWN_VALUE * team * (-1):
                     return False
 
         #if posTochr(king_pos) == "d8":
@@ -217,7 +217,7 @@ class Board:
         for index, i in enumerate(king_move):
             pos = [king_pos[0] + i[0], king_pos[1] + i[1]]
             if pos[0] >= 0 and pos[0] <= 7 and pos[1] >= 0 and pos[1] <= 7:
-                if state[pos[0]][pos[1]] == KING_VALUE * team:
+                if state[pos[0]][pos[1]] == KING_VALUE * team * (-1):
                     return True
          
         #if posTochr(king_pos) == "d8":       

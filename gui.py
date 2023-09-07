@@ -79,6 +79,7 @@ class GUIBoard:
                 self.currentActive = [-1, -1]
                 return
             
+            #print("here")
             self.currentActive = pos
             self.currentPossibleMoves = self.observer.getPossibleMovesOfPiece(pos)
 
